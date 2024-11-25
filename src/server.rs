@@ -53,7 +53,7 @@ pub fn start_server(
     let server = HttpServer::new(move || {
         let spec = Spec {
             info: Info {
-                title: "Bookeat API".to_string(),
+                title: "Hypertube API".to_string(),
                 version: "0.1.0".to_string(),
                 ..Default::default()
             },

@@ -30,8 +30,6 @@ pub enum ApiError {
     LibTorrentError(#[from] LibTorrentError),
     #[error(transparent)]
     TorrentError(#[from] TorrentError),
-    #[error(transparent)]
-    StreamError(#[from] crate::stream::error::StreamError),
 }
 
 impl ApiErrorImpl for ApiError {
@@ -46,7 +44,6 @@ impl ApiErrorImpl for ApiError {
             ApiError::ValidationError(..) => (StatusCode::BAD_REQUEST, "validation_error"),
             ApiError::LibTorrentError(err) => err.get_codes(),
             ApiError::TorrentError(err) => err.get_codes(),
-            ApiError::StreamError(err) => err.get_codes(),
         }
     }
 }

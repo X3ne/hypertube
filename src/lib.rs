@@ -11,7 +11,6 @@ mod error;
 mod infrastructure;
 mod server;
 mod state;
-mod stream;
 mod utils;
 pub use config::*;
 pub use server::start_server;

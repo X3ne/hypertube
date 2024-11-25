@@ -9,6 +9,8 @@ pub enum TorrentError {
     TorrentAlreadyAdded,
     #[error("Failed to initialize torrents")]
     TorrentInitializationFailed,
+    #[error("Failed to acquire stream")]
+    FailedToAcquireStream,
 }
 
 impl ApiErrorImpl for TorrentError {
@@ -21,6 +23,10 @@ impl ApiErrorImpl for TorrentError {
             TorrentError::TorrentInitializationFailed => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "torrent_initialization_failed",
+            ),
+            TorrentError::FailedToAcquireStream => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "failed_to_acquire_stream",
             ),
         }
     }

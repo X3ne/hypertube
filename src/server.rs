@@ -97,64 +97,10 @@ pub fn start_server(
                 web::QueryConfig::default()
                     .error_handler(|err, _req| ApiError::BadRequest(err.to_string()).into()),
             )
-            .app_data(web::JsonConfig::default().error_handler(|err, _req| {
-                tracing::error!("{:?}", err);
-
-                // if let JsonPayloadError::Deserialize(_) = err {
-                //     let mut validation_errors = ValidationErrors::new();
-                //
-                //     let err_string = err.to_string();
-                //     let err_str = err_string.as_str();
-                //
-                //     let missing_field_regex = Regex::new(r"missing field `([^`]*)`").unwrap();
-                //
-                //     if let Some(captures) = missing_field_regex.captures(err_str) {
-                //         if let Some(field_name) = captures.get(1) {
-                //             let field_name = field_name.as_str();
-                //
-                //             let mut validation_error = ValidationError::new("required");
-                //             validation_error.message =
-                //                 Some(format!("The field '{}' is required.", field_name).into());
-                //
-                //             validation_errors.add(field_name, validation_error);
-                //         }
-                //     }
-                //
-                //     let invalid_type_regex =
-                //         Regex::new(r#"invalid type: string "([^"]+)", expected ([a-zA-Z0-9]+)"#)
-                //             .unwrap();
-                //
-                //     if let Some(captures) = invalid_type_regex.captures(&err.to_string()) {
-                //         if let (Some(invalid_value), Some(expected_type)) =
-                //             (captures.get(1), captures.get(2))
-                //         {
-                //             let invalid_value = invalid_value.as_str();
-                //             let expected_type = expected_type.as_str();
-                //
-                //             let mut validation_error = ValidationError::new("type");
-                //             validation_error.message = Some(
-                //                 format!(
-                //                     "Invalid value: '{}'. Expected type: '{}'.",
-                //                     invalid_value, expected_type
-                //                 )
-                //                 .into(),
-                //             );
-                //             validation_error
-                //                 .params
-                //                 .insert("value".into(), json!(invalid_value));
-                //             validation_error
-                //                 .params
-                //                 .insert("expected".into(), json!(expected_type));
-                //
-                //             validation_errors.add("type_error", validation_error);
-                //         }
-                //     }
-                //
-                //     error::ApiError::ValidationError(validation_errors);
-                // }
-
-                ApiError::BadRequest(err.to_string()).into()
-            }))
+            .app_data(
+                web::JsonConfig::default()
+                    .error_handler(|err, _req| ApiError::BadRequest(err.to_string()).into()),
+            )
             .configure(|app| {
                 app.service(
                     scope("/v1")
@@ -162,7 +108,6 @@ pub fn start_server(
                         .service(resource("").route(get().to(health)))
                         .configure(|cfg| {
                             crate::torrents::config_torrent(cfg);
-                            crate::stream::config_stream(cfg);
                         }),
                 );
             })

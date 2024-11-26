@@ -21,6 +21,8 @@ pub struct Config {
     pub telemetry_collector_endpoint: Option<String>,
     pub download_dir: PathBuf,
     pub tvdb_api_key: String,
+    pub prowlarr_api_key: String,
+    pub prowlarr_api_url: String,
 }
 
 impl Config {

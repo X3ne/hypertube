@@ -41,4 +41,5 @@ pub struct Metadata {
     pub show_type: ShowType,
     pub seasons: Option<Vec<SeasonMeta>>,
     pub aired_date: Option<NaiveDateTime>,
+    pub aliases: Option<Vec<String>>,
 }

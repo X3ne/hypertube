@@ -17,6 +17,22 @@ pub struct TvdbProvider {
     config: Configuration,
 }
 
+fn filter_aliases(aliases: Option<Vec<tvdb4::models::Alias>>) -> Option<Vec<String>> {
+    aliases.map(|alias_vec| {
+        alias_vec
+            .into_iter()
+            .filter_map(|alias| {
+                if let Some(language) = alias.language {
+                    if language == "eng" || language == "fra" {
+                        return alias.name;
+                    }
+                }
+                None
+            })
+            .collect()
+    })
+}
+
 impl TvdbProvider {
     pub async fn new(api_key: String) -> Result<Self> {
         let mut config = Configuration::new();
@@ -157,6 +173,7 @@ impl Provider<TvdbConfig, TvdbSearchParam> for TvdbProvider {
                     seasons: None,
                     aired_date: Default::default(),
                     summary,
+                    aliases: data.aliases.clone(),
                 }
             })
             .collect::<Vec<_>>();
@@ -171,6 +188,8 @@ impl Metadata {
             TvOrMovie::Tv(show) => {
                 let slug = show.slug.ok_or(MetadataError::MissingSlug)?;
 
+                let aliases = filter_aliases(show.aliases);
+
                 Ok(Metadata {
                     slug,
                     title: translation.name,
@@ -179,6 +198,7 @@ impl Metadata {
                     poster: show.image,
                     show_type: ShowType::Tv,
                     summary: translation.overview,
+                    aliases,
                     // TODO: Implement this
                     backdrop: None,
                     seasons: Some(vec![]),
@@ -187,6 +207,8 @@ impl Metadata {
             }
             TvOrMovie::Movie(movie) => {
                 let slug = movie.slug.ok_or(MetadataError::MissingSlug)?;
+
+                let aliases = filter_aliases(movie.aliases);
 
                 Ok(Metadata {
                     slug,
@@ -197,6 +219,7 @@ impl Metadata {
                     show_type: ShowType::Movie,
                     seasons: None,
                     summary: translation.overview,
+                    aliases,
                     // TODO: Implement this
                     backdrop: None,
                     aired_date: Default::default(),

@@ -1,11 +1,17 @@
 use crate::error::ApiError;
+use crate::infrastructure::indexers::indexer::{Indexer, Torrent};
+use crate::infrastructure::metadata::error::MetadataError;
 use crate::infrastructure::metadata::meta::Metadata;
 use crate::infrastructure::metadata::provider::Provider;
 use crate::infrastructure::metadata::providers::tvdb::config::TvdbSearchParam;
 use crate::state::ApplicationState;
 use actix_web::web;
-use apistos::api_operation;
 use apistos::web::{get, resource, scope, ServiceConfig};
+use apistos::{api_operation, ApiComponent};
+use futures::future;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::sync::Arc;
 use tracing::instrument;
 
@@ -16,7 +22,11 @@ pub fn config_shows(cfg: &mut ServiceConfig) {
             .service(
                 scope("/tv")
                     // .service(resource("/trending").route(get().to(get_trending_shows)))
-                    .service(scope("/{slug}").service(resource("").route(get().to(get_tv)))),
+                    .service(
+                        scope("/{slug}")
+                            .service(resource("").route(get().to(get_tv)))
+                            .service(resource("/torrent").route(get().to(get_tv_torrents))),
+                    ),
             )
             .service(
                 scope("/movies")
@@ -80,6 +90,67 @@ pub async fn get_tv(
         .await?;
 
     Ok(web::Json(meta))
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ApiComponent, JsonSchema)]
+struct Params {
+    params: Option<String>,
+}
+
+#[api_operation(
+    tag = "shows",
+    operation_id = "get_tv_torrents",
+    summary = "Get torrents for TV show"
+)]
+#[instrument(skip(state))]
+pub async fn get_tv_torrents(
+    path: web::Path<String>,
+    query: web::Query<Params>,
+    state: web::Data<Arc<ApplicationState>>,
+) -> Result<web::Json<Vec<Torrent>>, ApiError> {
+    let slug = path.into_inner();
+    let params = query.into_inner();
+
+    let meta = state
+        .metadata_provider()
+        .get_tv_metadata(&slug, None)
+        .await?;
+
+    let show_titles: Vec<&str> = match (&meta.title, &meta.aliases) {
+        (Some(title), Some(aliases)) => aliases
+            .iter()
+            .map(String::as_str)
+            .chain(std::iter::once(title.as_str()))
+            .collect(),
+        (None, Some(aliases)) => aliases.iter().map(String::as_str).collect(),
+        (Some(title), None) => vec![title.as_str()],
+        _ => return Err(ApiError::MetadataError(MetadataError::MissingMetadata)),
+    };
+
+    let search_futures = show_titles.iter().map(|title| {
+        let prowlarr_indexer = state.prowlarr_indexer();
+        let value = params.params.clone();
+        async move {
+            prowlarr_indexer
+                .search(format!("{} {}", title, value.unwrap_or_default()).as_str())
+                .await
+        }
+    });
+
+    let search_results = future::join_all(search_futures).await;
+
+    let mut torrents_map = HashMap::new();
+    for result in search_results {
+        if let Ok(results) = result {
+            for torrent in results {
+                torrents_map.insert(torrent.name.clone(), torrent);
+            }
+        }
+    }
+
+    let torrents: Vec<Torrent> = torrents_map.into_values().collect();
+
+    Ok(web::Json(torrents))
 }
 
 #[api_operation(

@@ -1,3 +1,4 @@
+use crate::infrastructure::indexers::error::IndexerError;
 use crate::infrastructure::metadata::error::MetadataError;
 use crate::infrastructure::torrent::error::TorrentError as LibTorrentError;
 use crate::torrents::error::TorrentError;
@@ -30,6 +31,8 @@ pub enum ApiError {
     #[error(transparent)]
     MetadataError(#[from] MetadataError),
     #[error(transparent)]
+    IndexerError(#[from] IndexerError),
+    #[error(transparent)]
     LibTorrentError(#[from] LibTorrentError),
     #[error(transparent)]
     TorrentError(#[from] TorrentError),
@@ -46,6 +49,7 @@ impl ApiErrorImpl for ApiError {
             }
             ApiError::ValidationError(..) => (StatusCode::BAD_REQUEST, "validation_error"),
             ApiError::MetadataError(err) => err.get_codes(),
+            ApiError::IndexerError(err) => err.get_codes(),
             ApiError::LibTorrentError(err) => err.get_codes(),
             ApiError::TorrentError(err) => err.get_codes(),
         }

@@ -108,6 +108,7 @@ pub fn start_server(
                         .service(resource("").route(get().to(health)))
                         .configure(|cfg| {
                             crate::torrents::config_torrent(cfg);
+                            crate::shows::config_shows(cfg);
                         }),
                 );
             })

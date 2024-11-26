@@ -11,6 +11,7 @@ pub mod error;
 fn create_torrent_playlist_items(
     handle: &ManagedTorrent,
 ) -> Result<Vec<(usize, String)>, ApiError> {
+    // TODO: Change errors
     let mut playlist_items = handle
         .shared()
         .info

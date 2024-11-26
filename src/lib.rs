@@ -17,6 +17,7 @@ pub use server::start_server;
 pub use state::new_application_state;
 pub use utils::telemetry::init_telemetry;
 
+mod shows;
 mod torrents;
 
 pub fn init_service_logging() {

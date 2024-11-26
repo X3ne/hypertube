@@ -1,3 +1,4 @@
+use crate::infrastructure::metadata::error::MetadataError;
 use crate::infrastructure::torrent::error::TorrentError as LibTorrentError;
 use crate::torrents::error::TorrentError;
 use crate::{ApiErrorImpl, ErrorResponse};
@@ -27,6 +28,8 @@ pub enum ApiError {
     #[error(transparent)]
     ValidationError(#[from] garde::error::Report),
     #[error(transparent)]
+    MetadataError(#[from] MetadataError),
+    #[error(transparent)]
     LibTorrentError(#[from] LibTorrentError),
     #[error(transparent)]
     TorrentError(#[from] TorrentError),
@@ -42,6 +45,7 @@ impl ApiErrorImpl for ApiError {
                 (StatusCode::INTERNAL_SERVER_ERROR, "internal_server_error")
             }
             ApiError::ValidationError(..) => (StatusCode::BAD_REQUEST, "validation_error"),
+            ApiError::MetadataError(err) => err.get_codes(),
             ApiError::LibTorrentError(err) => err.get_codes(),
             ApiError::TorrentError(err) => err.get_codes(),
         }

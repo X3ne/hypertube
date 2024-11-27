@@ -1,4 +1,3 @@
 pub mod error;
-pub mod meta;
-pub mod provider;
-pub mod providers;
+pub mod models;
+pub mod tmdb;

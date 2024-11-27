@@ -1,13 +1,13 @@
 use crate::config::Config;
 use crate::infrastructure::indexers::global::GlobalIndexer;
 use crate::infrastructure::indexers::prowlarr::ProwlarrIndexer;
-use crate::infrastructure::metadata::providers::tvdb::TvdbProvider;
+use crate::infrastructure::metadata::tmdb::TmdbProvider;
 use librqbit::{Session, SessionOptions, SessionPersistenceConfig};
 use std::sync::Arc;
 
 pub struct ApplicationState {
     torrent_manager: Arc<Session>,
-    metadata_provider: Arc<TvdbProvider>,
+    metadata_provider: Arc<TmdbProvider>,
     global_indexer: Arc<GlobalIndexer>,
     prowlarr_indexer: Arc<ProwlarrIndexer>,
 }
@@ -28,9 +28,7 @@ pub async fn new_application_state(cfg: Config) -> ApplicationState {
     .await
     .expect("Failed to create torrents manager");
 
-    let provider = TvdbProvider::new(cfg.tvdb_api_key)
-        .await
-        .expect("Failed to create metadata provider");
+    let provider = TmdbProvider::new(cfg.tmdb_api_key);
 
     let global_indexer = GlobalIndexer::new();
     let prowlarr_indexer = ProwlarrIndexer::new(cfg.prowlarr_api_url, cfg.prowlarr_api_key);
@@ -48,7 +46,7 @@ impl ApplicationState {
         &self.torrent_manager
     }
 
-    pub fn metadata_provider(&self) -> &Arc<TvdbProvider> {
+    pub fn metadata_provider(&self) -> &Arc<TmdbProvider> {
         &self.metadata_provider
     }
 

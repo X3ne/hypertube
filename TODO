@@ -1,0 +1,23 @@
+stream:
+  ☐ transcoder
+  ☐ remuxer
+  ☐ dlna
+  ☐ audio transcoding
+  ☐ subtitles baking
+
+indexer:
+  ☐ fix global indexer poor results
+
+back:
+  ☐ auth
+  ☐ add episode progressions
+  ☐ add movie progressions
+  ☐ watchlist
+  ☐ watch history
+  ☐ user settings (language)
+  ☐ fetch tvdb episode data before torrent search to ensure accuracy of episode & season numbers
+  ☐ maybe add route to find subtitles
+  ✔ switch to dash streams @done(24-11-30 18:46)
+
+front:
+  ☐ fix mobile layout

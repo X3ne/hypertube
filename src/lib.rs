@@ -19,12 +19,10 @@ pub use utils::telemetry::init_telemetry;
 
 mod shows;
 mod torrents;
+mod transcode;
 
 pub fn init_service_logging() {
-    let log_level = match std::env::var("RUST_LOG")
-        .unwrap_or("info".to_string())
-        .as_str()
-    {
+    let log_level = match std::env::var("RUST_LOG").unwrap_or("info".to_string()).as_str() {
         "debug" => tracing::Level::DEBUG,
         "info" => tracing::Level::INFO,
         "warn" => tracing::Level::WARN,

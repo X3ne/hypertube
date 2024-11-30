@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct ProwlarrTorrent {
+    pub guid: String,
     pub size: i64,
     pub indexer: String,
     pub title: String,
@@ -62,7 +63,7 @@ impl TryFrom<ProwlarrTorrent> for Torrent {
         Ok(Self {
             name: torrent.title,
             torrent: None,
-            magnet: torrent.magnet_url,
+            magnet: torrent.guid,
             seeders: torrent.seeders,
             leechers: torrent.leechers,
             downloads: 0,

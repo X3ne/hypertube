@@ -68,19 +68,6 @@ export interface Crew {
   profile_path?: string | null;
 }
 
-export interface Duration {
-  /**
-   * @format uint32
-   * @min 0
-   */
-  nanos: number;
-  /**
-   * @format uint64
-   * @min 0
-   */
-  secs: number;
-}
-
 export interface Episode {
   air_date: string;
   crew: Crew[];
@@ -191,13 +178,6 @@ export interface LastEpisode {
    * @min 0
    */
   vote_count: number;
-}
-
-export interface LiveStats {
-  average_piece_download_time?: Duration | null;
-  download_speed: Speed;
-  time_remaining?: string | null;
-  upload_speed: Speed;
 }
 
 /** Movie */
@@ -332,11 +312,6 @@ export enum Source {
   Unknown = "Unknown",
 }
 
-export interface Speed {
-  /** @format double */
-  mbps: number;
-}
-
 /** TV */
 export interface TV {
   alternative_titles?: ResultsForAlternativeTitle | null;
@@ -456,42 +431,6 @@ export interface Torrent {
   size: string;
   source: Source;
   torrent?: string | null;
-}
-
-/** TorrentAdded */
-export interface TorrentAdded {
-  torrent_hash: string;
-}
-
-/** TorrentStats */
-export interface TorrentStats {
-  error?: string | null;
-  file_progress: number[];
-  finished: boolean;
-  live?: LiveStats | null;
-  /**
-   * @format uint64
-   * @min 0
-   */
-  progress_bytes: number;
-  state: TorrentStatsState;
-  /**
-   * @format uint64
-   * @min 0
-   */
-  total_bytes: number;
-  /**
-   * @format uint64
-   * @min 0
-   */
-  uploaded_bytes: number;
-}
-
-export enum TorrentStatsState {
-  Initializing = "initializing",
-  Live = "live",
-  Paused = "paused",
-  Error = "error",
 }
 
 /** TvSeason */
@@ -767,75 +706,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/torrents/magnet
      */
     addTorrentWithMagnet: (data: AddTorrentWithMagnet, params: RequestParams = {}) =>
-      this.request<TorrentAdded, void>({
+      this.request<void, void>({
         path: `/api/torrents/magnet`,
         method: "POST",
         body: data,
         type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags torrents
-     * @name GetStats
-     * @summary Get the stats of a torrents
-     * @request GET:/api/torrents/{torrent_hash}/stats
-     */
-    getStats: (torrentHash: string, params: RequestParams = {}) =>
-      this.request<TorrentStats, void>({
-        path: `/api/torrents/${torrentHash}/stats`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags stream
-     * @name Stream
-     * @summary Stream a torrents
-     * @request GET:/api/torrents/{torrent_hash}/stream/{file_id}
-     */
-    stream: (torrentHash: string, fileId: number, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/api/torrents/${torrentHash}/stream/${fileId}`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags stream
-     * @name Stream2
-     * @summary Stream a torrents
-     * @request GET:/api/torrents/{torrent_hash}/stream/{file_id}/{filename}
-     * @originalName stream
-     * @duplicate
-     */
-    stream2: (torrentHash: string, fileId: number, filename: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/api/torrents/${torrentHash}/stream/${fileId}/${filename}`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags stream
-     * @name CreatePlaylist
-     * @summary Create M3U8 playlist
-     * @request GET:/api/torrents/{torrent_hash}/stream/playlist
-     */
-    createPlaylist: (torrentHash: string, params: RequestParams = {}) =>
-      this.request<void, void>({
-        path: `/api/torrents/${torrentHash}/stream/playlist`,
-        method: "GET",
         ...params,
       }),
 
@@ -961,6 +836,57 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/shows/movies/${id}`,
         method: "GET",
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags transcode
+     * @name GetManifest
+     * @summary Get the mpd manifest
+     * @request GET:/api/transcode/start.mpd
+     */
+    getManifest: (
+      query: {
+        session_id: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, void>({
+        path: `/api/transcode/start.mpd`,
+        method: "GET",
+        query: query,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags transcode
+     * @name GetInitSegment
+     * @summary Get the initialization segment for MPEG-DASH
+     * @request GET:/api/transcode/session/{session_id}/{representation_id}/header
+     */
+    getInitSegment: (sessionId: string, representationId: number, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/transcode/session/${sessionId}/${representationId}/header`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags transcode
+     * @name GetSegment
+     * @summary Get a media segment
+     * @request GET:/api/transcode/session/{session_id}/{representation_id}/{segment_number}.m4s
+     */
+    getSegment: (sessionId: string, representationId: number, segmentNumber: number, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/transcode/session/${sessionId}/${representationId}/${segmentNumber}.m4s`,
+        method: "GET",
         ...params,
       }),
   };

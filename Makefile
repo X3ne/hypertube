@@ -29,7 +29,7 @@ sync_test:
 	cargo test -- --test-threads 1
 
 spec_gen:
-	npx swagger-typescript-api -p http://127.0.0.1:3000/openapi.json -o ./frontend/src/api -n spec.ts
+	npx swagger-typescript-api -p http://127.0.0.1:3000/openapi.json -o ./app/src/api -n spec.ts
 
 db_run:
 	docker-compose up -d

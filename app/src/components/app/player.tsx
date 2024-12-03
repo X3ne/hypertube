@@ -5,9 +5,11 @@ import React, { useEffect } from 'react'
 import {
   LuChevronDown,
   LuChevronUp,
+  LuLoaderCircle,
   LuMaximize2,
   LuPause,
-  LuPlay
+  LuPlay,
+  LuSquare
 } from 'react-icons/lu'
 import ReactPlayer from 'react-player'
 import { OnProgressProps } from 'react-player/base'
@@ -29,8 +31,10 @@ const Player = React.forwardRef<
   const [duration, setDuration] = React.useState(0)
   const [playing, setPlaying] = React.useState(false)
   const [showControls, setShowControls] = React.useState(true)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
 
-  const { media } = usePlayback()
+  const { media, stopPlayback } = usePlayback()
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
@@ -112,7 +116,20 @@ const Player = React.forwardRef<
           height="100%"
           onProgress={(state) => setProgress(state)}
           onDuration={(duration) => setDuration(duration)}
+          onBuffer={() => setIsLoading(true)}
+          onBufferEnd={() => setIsLoading(false)}
+          onError={(err) => setError(err)}
         />
+        {isLoading && (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-20">
+            <LuLoaderCircle className="w-10 h-10 animate-spin" />
+          </div>
+        )}
+        {error && (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-20">
+            <p className="text-white">{error}</p>
+          </div>
+        )}
       </portals.InPortal>
 
       {isFullScreen && (
@@ -190,7 +207,7 @@ const Player = React.forwardRef<
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <button
               className="flex items-center justify-center p-2 bg-accent rounded-full"
               onClick={() => setPlaying(!playing)}
@@ -200,6 +217,9 @@ const Player = React.forwardRef<
               ) : (
                 <LuPlay className="fill-foreground stroke-foreground" />
               )}
+            </button>
+            <button onClick={stopPlayback}>
+              <LuSquare className="w-3.5 h-3.5 fill-muted-foreground stroke-muted-foreground" />
             </button>
           </div>
           <div className="w-5/12"></div>

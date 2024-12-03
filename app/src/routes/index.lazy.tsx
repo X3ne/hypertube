@@ -5,15 +5,13 @@ import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { LuArrowRight, LuPause, LuPlay } from 'react-icons/lu'
 import { MovieCarousel, TvCarousel } from '@/components/app/showcarousel'
-import LiteYouTubeEmbed from 'react-lite-youtube-embed'
 import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useGradient } from '@/hooks/useGradient'
 import { useSong } from '@/hooks/useSong'
 import api from '@/api'
 import { getTmdbImageUrl } from '@/utils/tmdb'
-import { usePlayback } from '@/hooks/usePlayback'
 import ReactPlayer from 'react-player'
 
 export const Route = createLazyFileRoute('/')({
@@ -46,7 +44,6 @@ function Index() {
 
   const DOMPurify = createDOMPurify(window)
 
-  const [sliderIndex, setSliderIndex] = useState(0)
   const [isVideoEnabled, setIsVideoEnabled] = useState(
     localStorage.getItem('video-enabled') === 'true'
   )
@@ -68,11 +65,7 @@ function Index() {
       <div className="relative h-dvh">
         {tvTrending && (
           <>
-            <Slideshow
-              interval={10000}
-              className="w-full h-[560px]"
-              onChange={(index) => setSliderIndex(index)}
-            >
+            <Slideshow interval={10000} className="w-full h-[560px]">
               {tvTrending.slice(0, 4).map((show, i) => (
                 <div
                   className="relative w-full h-full text-foreground"

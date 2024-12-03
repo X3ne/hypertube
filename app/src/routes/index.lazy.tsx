@@ -14,6 +14,7 @@ import { useSong } from '@/hooks/useSong'
 import api from '@/api'
 import { getTmdbImageUrl } from '@/utils/tmdb'
 import { usePlayback } from '@/hooks/usePlayback'
+import ReactPlayer from 'react-player'
 
 export const Route = createLazyFileRoute('/')({
   component: Index
@@ -22,25 +23,11 @@ export const Route = createLazyFileRoute('/')({
 function Index() {
   const { changeImage } = useGradient()
   const { changeShow } = useSong()
-  const { changeMedia } = usePlayback()
 
   useEffect(() => {
     changeImage(null)
     changeShow(null)
   }, [changeImage, changeShow])
-
-  useEffect(() => {
-    // TODO: used for debugging, to remove
-    changeMedia({
-      name: 'Alya Sometimes Hides Her Feelings in Russian',
-      episode_name: 'Chin Up and Face Forward',
-      episode: '12',
-      season: '1',
-      cover: 'https://via.placeholder.com/150',
-      stream_url:
-        'http://localhost:3000/api/transcode/start.mpd?session_id=test'
-    })
-  }, [])
 
   const { data: tvTrending } = useQuery({
     queryKey: ['tv_trending'],
@@ -60,60 +47,21 @@ function Index() {
   const DOMPurify = createDOMPurify(window)
 
   const [sliderIndex, setSliderIndex] = useState(0)
-  const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const [isVideoEnabled, setIsVideoEnabled] = useState(
     localStorage.getItem('video-enabled') === 'true'
   )
 
+  const videosIds = tvTrending?.slice(0, 4).map((show) => {
+    return (
+      show.videos?.results.filter(
+        (a) => a.site === 'YouTube' && a.type === 'Trailer'
+      )[0]?.key || ''
+    )
+  })
+
   useEffect(() => {
     localStorage.setItem('video-enabled', String(isVideoEnabled))
   }, [isVideoEnabled])
-
-  const clickPlayButton = () => {
-    const playButtons = document.querySelectorAll(
-      '.lty-playbtn'
-    ) as NodeListOf<HTMLButtonElement>
-
-    playButtons[sliderIndex]?.click()
-  }
-
-  useEffect(() => {
-    if (isVideoEnabled === false) return
-
-    // TODO: Maybe preload video here
-
-    if (videoRefs.current[sliderIndex]) {
-      postMessageToIframe('playVideo')
-    } else {
-      clickPlayButton()
-    }
-
-    return () => {
-      pauseVideo()
-      setPlaybackStart(0)
-    }
-  }, [sliderIndex, tvTrending, isVideoEnabled])
-
-  const pauseVideo = () => {
-    postMessageToIframe('pauseVideo')
-  }
-
-  const setPlaybackStart = (timeInSeconds: number) => {
-    postMessageToIframe('seekTo', timeInSeconds)
-  }
-
-  const postMessageToIframe = (action: string, timeInSeconds?: number) => {
-    const iframe = videoRefs.current[sliderIndex]
-    if (!iframe) return
-
-    const message = {
-      event: 'command',
-      func: action,
-      args: timeInSeconds !== undefined ? [timeInSeconds] : []
-    }
-
-    iframe.contentWindow?.postMessage(JSON.stringify(message), '*')
-  }
 
   return (
     <>
@@ -130,28 +78,17 @@ function Index() {
                   className="relative w-full h-full text-foreground"
                   key={show.id}
                 >
-                  {show.videos?.results.filter(
-                    (a) => a.site === 'YouTube' && a.type === 'Trailer'
-                  )[0] && isVideoEnabled ? (
-                    <div className="relative">
-                      <div className="relative pointer-events-none">
-                        <LiteYouTubeEmbed
-                          id={
-                            show.videos?.results.filter(
-                              (a) =>
-                                a.site === 'YouTube' && a.type === 'Trailer'
-                            )[0].key
-                          }
-                          adNetwork={true}
-                          params="autoplay=1&mute=1&controls=0&modestbranding=1&showinfo=0&rel=0&enablejsapi=1"
-                          playlist={false}
-                          poster="hqdefault"
-                          noCookie={true}
-                          title={show.name}
-                          ref={(ref) => {
-                            videoRefs.current[i] = ref as HTMLIFrameElement
-                          }}
-                          iframeClass="-z-20 pointer-event-none"
+                  {videosIds && videosIds[i] && isVideoEnabled ? (
+                    <div className="relative w-full h-full">
+                      <div className="relative pointer-events-none w-full aspect-video -z-10">
+                        <ReactPlayer
+                          url={`https://www.youtube.com/watch?v=${videosIds[i]}`}
+                          width={'100%'}
+                          height={'100%'}
+                          playing={true}
+                          muted={true}
+                          controls={false}
+                          loop={true}
                         />
                       </div>
                       <div className="absolute top-0 left-0 w-full h-full bg-white/0 z-10"></div>

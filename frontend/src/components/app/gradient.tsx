@@ -45,7 +45,7 @@ const Gradient = () => {
         before: prev.after || prev.before,
         opacity: '100'
       }))
-    }, 300)
+    }, 500)
 
     return () => clearTimeout(timeout)
   }, [colors])
@@ -89,7 +89,7 @@ const Gradient = () => {
           }}
         ></div>
 
-        <div className="fixed backdrop-blur-2xl bg-secondary/70 w-full h-full"></div>
+        <div className="fixed backdrop-blur-2xl bg-secondary/30 w-full h-full"></div>
       </div>
     </>
   )

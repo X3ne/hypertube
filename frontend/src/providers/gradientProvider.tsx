@@ -22,11 +22,13 @@ export const GradientProvider: React.FC<GradientProviderProps> = ({
   const [image, setImage] = useState<string | null>(null)
   const [colors, setColors] = useState<RGB[]>([])
 
-  const changeImage = (image: string | null) => {
-    setImage(image)
+  const changeImage = (new_image: string | null) => {
+    if (new_image === image) return
 
-    if (image) {
-      extractColors(image).then((colors) => {
+    setImage(new_image)
+
+    if (new_image) {
+      extractColors(new_image).then((colors) => {
         setColors(colors)
       })
     } else {

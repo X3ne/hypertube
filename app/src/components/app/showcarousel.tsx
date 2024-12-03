@@ -51,14 +51,9 @@ const ShowCarousel = React.forwardRef<HTMLDivElement, ShowCarouselProps<any>>(
               <CarouselItem
                 key={item.id}
                 title={getTitle(item)}
-                className="basis-1/2 md:basis-1/6 lg:basis-2/12 2xl:basis-1/12"
+                className="basis-2/6 md:basis-1/6 lg:basis-1/6 2xl:basis-64"
               >
-                <Popover open>
-                  <PopoverContent align="center">
-                    <div className="bg-white w-96 h-56"></div>
-                  </PopoverContent>
-                </Popover>
-                <Link to={`${linkPrefix}/${item.id}`}>
+                <Link to={`${linkPrefix}/${item.id}`} className="w-32">
                   <Card className="bg-transparent border-transparent text-foreground space-y-2 select-none">
                     <CardContent className="p-0">
                       <LazyImage
@@ -67,7 +62,7 @@ const ShowCarousel = React.forwardRef<HTMLDivElement, ShowCarouselProps<any>>(
                           getTmdbPlaceholderImageUrl(item.poster_path) || ''
                         }
                         alt={getTitle(item)}
-                        className="h-72 rounded-md"
+                        className=" rounded-md"
                       />
                     </CardContent>
                     <CardFooter className="p-0">

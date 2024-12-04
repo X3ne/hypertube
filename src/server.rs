@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::config::Config;
 use crate::error::ApiError;
 use crate::get_secret_key;
+use crate::infrastructure::oauth::OAuth;
 use crate::state::ApplicationState;
 use crate::utils::cors::default_cors;
 use actix_session::config::PersistentSession;
@@ -22,6 +23,7 @@ use apistos::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use sqlx::SqlitePool;
 use tokio::task::JoinHandle;
 use tracing_actix_web::TracingLogger;
 
@@ -46,8 +48,12 @@ pub fn start_server(
     cfg: Arc<Config>,
     host: String,
     port: u16,
+    pool: SqlitePool,
 ) -> Result<ActixServer, Box<dyn std::error::Error>> {
     let cookie_cfg = crate::config::CookieConfig::from_env().expect("Failed to load cookie configuration");
+    let oauth_config = crate::config::OAuthConfig::from_env().expect("Failed to load oauth configuration");
+
+    let oauth = OAuth::new(oauth_config);
 
     let server = HttpServer::new(move || {
         let spec = Spec {
@@ -80,7 +86,9 @@ pub fn start_server(
                 .build(),
             )
             .app_data(web::Data::new(cfg.clone()))
+            .app_data(web::Data::new(Arc::new(oauth.clone())))
             .app_data(web::Data::new(state.clone()))
+            .app_data(web::Data::new(pool.clone()))
             .app_data(
                 web::FormConfig::default().error_handler(|err, _req| ApiError::BadRequest(err.to_string()).into()),
             )
@@ -102,6 +110,8 @@ pub fn start_server(
                             crate::torrents::config_torrent(cfg);
                             crate::shows::config_shows(cfg);
                             crate::transcode::config_transcode(cfg);
+                            crate::auth::config_auth(cfg);
+                            crate::users::config_users(cfg);
                         }),
                 );
             })

@@ -1,7 +1,9 @@
+use crate::auth::error::AuthError;
 use crate::infrastructure::indexers::error::IndexerError;
 use crate::infrastructure::metadata::error::MetadataError;
 use crate::infrastructure::torrent::error::TorrentError as LibTorrentError;
 use crate::torrents::error::TorrentError;
+use crate::users::error::UserError;
 use crate::{ApiErrorImpl, ErrorResponse};
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use apistos::ApiErrorComponent;
@@ -22,8 +24,12 @@ pub enum ApiError {
     Unauthorized,
     #[error("Bad Request: {0}")]
     BadRequest(String),
-    #[error("Session Error: {0}")]
-    SessionError(#[from] actix_session::SessionGetError),
+    #[error("Failed to parse uuid")]
+    FailedToParseUuid(#[from] uuid::Error),
+    #[error("Session error: {0}")]
+    SessionError(#[from] actix_session::SessionInsertError),
+    #[error("Session error: {0}")]
+    SessionErrorGet(#[from] actix_session::SessionGetError),
     #[error("Internal Server Error")]
     InternalServerError,
     #[error(transparent)]
@@ -34,8 +40,14 @@ pub enum ApiError {
     IndexerError(#[from] IndexerError),
     #[error(transparent)]
     LibTorrentError(#[from] LibTorrentError),
+    #[error("Database Error: {0}")]
+    DatabaseError(#[from] sqlx::Error),
     #[error(transparent)]
     TorrentError(#[from] TorrentError),
+    #[error(transparent)]
+    AuthError(#[from] AuthError),
+    #[error(transparent)]
+    UserError(#[from] UserError),
 }
 
 impl ApiErrorImpl for ApiError {
@@ -43,15 +55,18 @@ impl ApiErrorImpl for ApiError {
         match self {
             ApiError::Unauthorized => (StatusCode::UNAUTHORIZED, "unauthorized"),
             ApiError::BadRequest(..) => (StatusCode::BAD_REQUEST, "bad_request"),
+            ApiError::FailedToParseUuid(..) => (StatusCode::BAD_REQUEST, "uuid_parse_error"),
             ApiError::SessionError(..) => (StatusCode::UNAUTHORIZED, "session_error"),
-            ApiError::InternalServerError => {
-                (StatusCode::INTERNAL_SERVER_ERROR, "internal_server_error")
-            }
+            ApiError::SessionErrorGet(..) => (StatusCode::UNAUTHORIZED, "session_error"),
+            ApiError::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, "internal_server_error"),
             ApiError::ValidationError(..) => (StatusCode::BAD_REQUEST, "validation_error"),
             ApiError::MetadataError(err) => err.get_codes(),
             ApiError::IndexerError(err) => err.get_codes(),
             ApiError::LibTorrentError(err) => err.get_codes(),
+            ApiError::DatabaseError(..) => (StatusCode::INTERNAL_SERVER_ERROR, "database_error"),
             ApiError::TorrentError(err) => err.get_codes(),
+            ApiError::AuthError(err) => err.get_codes(),
+            ApiError::UserError(err) => err.get_codes(),
         }
     }
 }

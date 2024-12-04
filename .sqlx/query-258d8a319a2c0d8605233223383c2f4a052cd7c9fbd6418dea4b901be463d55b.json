@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT *\n            FROM user\n            WHERE username = ?1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "username",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "email",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "password",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "permissions",
+        "ordinal": 4,
+        "type_info": "Int64"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 5,
+        "type_info": "Datetime"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 6,
+        "type_info": "Datetime"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "258d8a319a2c0d8605233223383c2f4a052cd7c9fbd6418dea4b901be463d55b"
+}

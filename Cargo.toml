@@ -8,7 +8,8 @@ actix-web = { version = "4.9.0", features = ["http2"], default-features = false 
 actix-cors = "0.7.0"
 actix-session = { version = "0.10.1", features = ["cookie-session"] }
 schemars = { package = "apistos-schemars", version = "0.8" }
-apistos = { version = "0.4.1", features = ["scalar", "query", "extras", "garde"] }
+apistos = { version = "0.4.1", features = ["scalar", "query", "extras", "garde", "actix-web-grants"] }
+sqlx = { version = "0.7.4", features = ["sqlite", "runtime-tokio-rustls", "chrono", "uuid"] }
 serde = { version = "1.0.215", features = ["derive"] }
 thiserror = "2.0.3"
 librqbit = "7.0.1"
@@ -23,7 +24,7 @@ serde_json = "1.0.133"
 log = "0.4.22"
 dotenvy = "0.15.7"
 config = "0.14.1"
-garde = { version = "0.20.0", features = ["regex"] }
+garde = { version = "0.20.0", features = ["regex", "email"] }
 opentelemetry = "0.26.0"
 opentelemetry_sdk = { version = "0.26.0", features = ["rt-tokio-current-thread"] }
 opentelemetry-otlp = "0.26.0"
@@ -38,3 +39,13 @@ itertools = "0.13.0"
 chrono = "0.4.38"
 reqwest = { version = "0.12.9", features = ["json", "rustls-tls"] }
 async-trait = "0.1.83"
+actix-web-grants = "4.1.1"
+oauth2 = "4.4.2"
+uuid = "1.11.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+debug = false
+panic = 'abort' # TODO: To test

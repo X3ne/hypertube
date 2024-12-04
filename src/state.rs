@@ -1,9 +1,12 @@
 use crate::config::Config;
+use crate::error::ApiError;
 use crate::infrastructure::indexers::global::GlobalIndexer;
 use crate::infrastructure::indexers::prowlarr::ProwlarrIndexer;
 use crate::infrastructure::metadata::tmdb::TmdbProvider;
 use librqbit::{Session, SessionOptions, SessionPersistenceConfig};
-use std::sync::Arc;
+use std::path::PathBuf;
+use std::str::FromStr;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 pub struct ApplicationState {
     torrent_manager: Arc<Session>,

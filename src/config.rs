@@ -19,6 +19,7 @@ pub struct Config {
     pub port: u16,
     pub origins: Vec<String>,
     pub telemetry_collector_endpoint: Option<String>,
+    pub database_url: String,
     pub download_dir: PathBuf,
     pub tmdb_api_key: String,
     pub prowlarr_api_key: String,
@@ -74,6 +75,27 @@ impl CookieConfig {
             .build()?;
 
         let cfg: CookieConfig = config.try_deserialize()?;
+
+        Ok(cfg)
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, PartialEq, Eq)]
+pub struct OAuthConfig {
+    pub ft_client_id: String,
+    pub ft_client_secret: String,
+    pub ft_redirect_uri: String,
+}
+
+impl OAuthConfig {
+    pub fn from_env() -> Result<Self, config::ConfigError> {
+        dotenv().ok();
+
+        let config = config::Config::builder()
+            .add_source(config::Environment::with_prefix("oauth").try_parsing(true))
+            .build()?;
+
+        let cfg: OAuthConfig = config.try_deserialize()?;
 
         Ok(cfg)
     }

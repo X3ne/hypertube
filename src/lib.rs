@@ -7,6 +7,7 @@ use std::fmt::Display;
 use tracing_subscriber::fmt::Subscriber;
 
 mod config;
+pub mod database;
 mod error;
 mod infrastructure;
 mod server;
@@ -17,9 +18,11 @@ pub use server::start_server;
 pub use state::new_application_state;
 pub use utils::telemetry::init_telemetry;
 
+mod auth;
 mod shows;
 mod torrents;
 mod transcode;
+mod users;
 
 pub fn init_service_logging() {
     let log_level = match std::env::var("RUST_LOG").unwrap_or("info".to_string()).as_str() {

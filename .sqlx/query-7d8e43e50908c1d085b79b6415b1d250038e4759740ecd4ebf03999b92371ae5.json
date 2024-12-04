@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            UPDATE user\n            SET username = COALESCE(?2, username),\n                email = COALESCE(?3, email),\n                password = COALESCE(?4, password),\n                permissions = COALESCE(?5, permissions),\n                updated_at = CURRENT_TIMESTAMP\n            WHERE id = ?1\n            RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "username",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "email",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "password",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "permissions",
+        "ordinal": 4,
+        "type_info": "Int64"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 5,
+        "type_info": "Datetime"
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 6,
+        "type_info": "Datetime"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7d8e43e50908c1d085b79b6415b1d250038e4759740ecd4ebf03999b92371ae5"
+}

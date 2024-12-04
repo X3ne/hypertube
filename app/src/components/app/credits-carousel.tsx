@@ -42,6 +42,25 @@ const CreditsCarousel = React.forwardRef<HTMLDivElement, CreditsCarousel>(
                 </div>
               </CarouselItem>
             ))}
+            {credits.crew.map((person) => (
+              <CarouselItem
+                key={person.id}
+                title={person.name}
+                className="basis-60 md:basis-56 lg:basis-60"
+              >
+                <div className="flex flex-col items-center justify-center text-center text-nowrap">
+                  <LazyImage
+                    src={getTmdbImageUrl(person.profile_path) || ''}
+                    alt={person.name}
+                    className="w-52 h-52 object-cover rounded-full"
+                  />
+                  <h3 className="text-foreground font-semibold text-md">
+                    {person.name}
+                  </h3>
+                  <p className="text-foreground text-sm">{person.job}</p>
+                </div>
+              </CarouselItem>
+            ))}
           </CarouselContent>
         </Carousel>
       </div>

@@ -10,6 +10,7 @@ export interface ShowHoverProps extends React.HTMLAttributes<HTMLImageElement> {
 const LazyImage = React.forwardRef<HTMLImageElement, ShowHoverProps>(
   ({ className, src, alt, placeholder, ...props }, ref) => {
     const [isVisible, setIsVisible] = useState(false)
+    const [isError, setIsError] = useState(false)
     const imageRef = useRef<HTMLImageElement | null>(null)
 
     const setRef = (node: HTMLImageElement | null) => {
@@ -52,13 +53,26 @@ const LazyImage = React.forwardRef<HTMLImageElement, ShowHoverProps>(
 
     return (
       <div className={cn('relative overflow-hidden', className)}>
-        <img
-          ref={setRef}
-          src={isVisible ? src : placeholder}
-          alt={alt}
-          className={cn(!isVisible && 'blur-sm', 'w-full h-full object-cover')}
-          {...props}
-        />
+        {!isError ? (
+          <img
+            ref={setRef}
+            src={isVisible ? src : placeholder}
+            alt={alt}
+            className={cn(
+              !isVisible && 'blur-sm',
+              'w-full h-full object-cover'
+            )}
+            onError={() => {
+              console.log('Error loading image', src)
+              setIsError(true)
+            }}
+            {...props}
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-full bg-accent select-none font-semibold">
+            <p>{alt}</p>
+          </div>
+        )}
       </div>
     )
   }

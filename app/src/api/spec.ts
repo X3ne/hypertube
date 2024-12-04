@@ -233,6 +233,18 @@ export interface Network {
   origin_country?: string | null;
 }
 
+/** OAuthResponse */
+export interface OAuthResponse {
+  url: string;
+}
+
+/** PatchUser */
+export interface PatchUser {
+  email?: string | null;
+  password?: string | null;
+  username?: string | null;
+}
+
 export interface ProductionCompany {
   /**
    * @format uint32
@@ -242,6 +254,13 @@ export interface ProductionCompany {
   logo_path?: string | null;
   name: string;
   origin_country?: string | null;
+}
+
+/** RegisterUser */
+export interface RegisterUser {
+  email: string;
+  password: string;
+  username: string;
 }
 
 export interface ResultsForAlternativeTitle {
@@ -447,6 +466,21 @@ export interface TvSeason {
   season_number: number;
   /** @format double */
   vote_average: number;
+}
+
+/** User */
+export interface User {
+  /** @format partial-date-time */
+  created_at: string;
+  email: string;
+  /** @format uuid */
+  id: string;
+  password?: string | null;
+  /** @format int64 */
+  permissions: number;
+  /** @format partial-date-time */
+  updated_at: string;
+  username: string;
 }
 
 export interface Video {
@@ -887,6 +921,129 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<void, void>({
         path: `/api/transcode/session/${sessionId}/${representationId}/${segmentNumber}.m4s`,
         method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags auth
+     * @name Login42
+     * @summary Login with 42 account
+     * @request GET:/api/auth/oauth/42/login
+     */
+    login42: (params: RequestParams = {}) =>
+      this.request<OAuthResponse, void>({
+        path: `/api/auth/oauth/42/login`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags auth
+     * @name Callback42
+     * @summary Callback for 42 OAuth
+     * @request GET:/api/auth/oauth/42/callback
+     * @secure
+     */
+    callback42: (
+      query: {
+        code: string;
+        state: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, void>({
+        path: `/api/auth/oauth/42/callback`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name GetMe
+     * @summary Get current user
+     * @request GET:/api/users/@me
+     * @secure
+     */
+    getMe: (params: RequestParams = {}) =>
+      this.request<User, void>({
+        path: `/api/users/@me`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name Register
+     * @summary Register a new user
+     * @request POST:/api/users/register
+     */
+    register: (data: RegisterUser, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/users/register`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name GetUser
+     * @summary Get a user by ID
+     * @request GET:/api/users/{user_id}
+     */
+    getUser: (userId: string, params: RequestParams = {}) =>
+      this.request<User, void>({
+        path: `/api/users/${userId}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name PatchUser
+     * @summary Patch a user
+     * @request PATCH:/api/users/{user_id}
+     */
+    patchUser: (userId: string, data: PatchUser, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/users/${userId}`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags users
+     * @name DeleteUser
+     * @summary Delete a user
+     * @request DELETE:/api/users/{user_id}
+     */
+    deleteUser: (userId: string, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/users/${userId}`,
+        method: "DELETE",
         ...params,
       }),
   };

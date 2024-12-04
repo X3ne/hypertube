@@ -14,7 +14,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as WatchIndexImport } from './routes/watch/index'
-import { Route as AuthPlexCallbackImport } from './routes/auth/plex/callback'
 import { Route as ShowTvIdIndexImport } from './routes/show/tv/$id/index'
 import { Route as ShowTvIdSeasonSeasonNumberImport } from './routes/show/tv/$id/season/$seasonNumber'
 
@@ -49,12 +48,6 @@ const AuthLoginLazyRoute = AuthLoginLazyImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/auth/login.lazy').then((d) => d.Route))
-
-const AuthPlexCallbackRoute = AuthPlexCallbackImport.update({
-  id: '/auth/plex/callback',
-  path: '/auth/plex/callback',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const ShowTvIdIndexRoute = ShowTvIdIndexImport.update({
   id: '/show/tv/$id/',
@@ -102,13 +95,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/auth/plex/callback': {
-      id: '/auth/plex/callback'
-      path: '/auth/plex/callback'
-      fullPath: '/auth/plex/callback'
-      preLoaderRoute: typeof AuthPlexCallbackImport
-      parentRoute: typeof rootRoute
-    }
     '/show/tv/$id/': {
       id: '/show/tv/$id/'
       path: '/show/tv/$id'
@@ -133,7 +119,6 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginLazyRoute
   '/watch': typeof WatchIndexRoute
   '/error': typeof ErrorIndexLazyRoute
-  '/auth/plex/callback': typeof AuthPlexCallbackRoute
   '/show/tv/$id': typeof ShowTvIdIndexRoute
   '/show/tv/$id/season/$seasonNumber': typeof ShowTvIdSeasonSeasonNumberRoute
 }
@@ -143,7 +128,6 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginLazyRoute
   '/watch': typeof WatchIndexRoute
   '/error': typeof ErrorIndexLazyRoute
-  '/auth/plex/callback': typeof AuthPlexCallbackRoute
   '/show/tv/$id': typeof ShowTvIdIndexRoute
   '/show/tv/$id/season/$seasonNumber': typeof ShowTvIdSeasonSeasonNumberRoute
 }
@@ -154,7 +138,6 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginLazyRoute
   '/watch/': typeof WatchIndexRoute
   '/error/': typeof ErrorIndexLazyRoute
-  '/auth/plex/callback': typeof AuthPlexCallbackRoute
   '/show/tv/$id/': typeof ShowTvIdIndexRoute
   '/show/tv/$id/season/$seasonNumber': typeof ShowTvIdSeasonSeasonNumberRoute
 }
@@ -166,7 +149,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/watch'
     | '/error'
-    | '/auth/plex/callback'
     | '/show/tv/$id'
     | '/show/tv/$id/season/$seasonNumber'
   fileRoutesByTo: FileRoutesByTo
@@ -175,7 +157,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/watch'
     | '/error'
-    | '/auth/plex/callback'
     | '/show/tv/$id'
     | '/show/tv/$id/season/$seasonNumber'
   id:
@@ -184,7 +165,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/watch/'
     | '/error/'
-    | '/auth/plex/callback'
     | '/show/tv/$id/'
     | '/show/tv/$id/season/$seasonNumber'
   fileRoutesById: FileRoutesById
@@ -195,7 +175,6 @@ export interface RootRouteChildren {
   AuthLoginLazyRoute: typeof AuthLoginLazyRoute
   WatchIndexRoute: typeof WatchIndexRoute
   ErrorIndexLazyRoute: typeof ErrorIndexLazyRoute
-  AuthPlexCallbackRoute: typeof AuthPlexCallbackRoute
   ShowTvIdIndexRoute: typeof ShowTvIdIndexRoute
   ShowTvIdSeasonSeasonNumberRoute: typeof ShowTvIdSeasonSeasonNumberRoute
 }
@@ -205,7 +184,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginLazyRoute: AuthLoginLazyRoute,
   WatchIndexRoute: WatchIndexRoute,
   ErrorIndexLazyRoute: ErrorIndexLazyRoute,
-  AuthPlexCallbackRoute: AuthPlexCallbackRoute,
   ShowTvIdIndexRoute: ShowTvIdIndexRoute,
   ShowTvIdSeasonSeasonNumberRoute: ShowTvIdSeasonSeasonNumberRoute,
 }
@@ -224,7 +202,6 @@ export const routeTree = rootRoute
         "/auth/login",
         "/watch/",
         "/error/",
-        "/auth/plex/callback",
         "/show/tv/$id/",
         "/show/tv/$id/season/$seasonNumber"
       ]
@@ -240,9 +217,6 @@ export const routeTree = rootRoute
     },
     "/error/": {
       "filePath": "error/index.lazy.tsx"
-    },
-    "/auth/plex/callback": {
-      "filePath": "auth/plex/callback.tsx"
     },
     "/show/tv/$id/": {
       "filePath": "show/tv/$id/index.tsx"

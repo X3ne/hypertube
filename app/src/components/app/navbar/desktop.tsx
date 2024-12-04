@@ -22,21 +22,17 @@ import {
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/react-query'
-import api from '@/api'
-import { useDebounce } from '@/hooks/useDebounce'
+import api, { User } from '@/api'
 import { debounce } from '@/utils'
 import LazyImage from '@/components/lazy-image'
-import {
-  getTmdbImageUrl,
-  getTmdbPlaceholderImageUrl
-} from '../../../utils/tmdb'
+import { getTmdbImageUrl, getTmdbPlaceholderImageUrl } from '@/utils/tmdb'
 
 interface INavBarDesktopProps extends React.HTMLAttributes<HTMLDivElement> {
-  user: null
+  user?: User
   logout: () => void
 }
 
-const UserSection = ({ user, logout }: INavBarDesktopProps) => {
+const UserSection = ({ user, logout }: { user: User; logout: () => void }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   return (
@@ -62,7 +58,7 @@ const UserSection = ({ user, logout }: INavBarDesktopProps) => {
         <DropdownMenuContent className="mr-8 mt-1">
           <DropdownMenuLabel>
             <div className="flex gap-4">
-              <Avatar>
+              <Avatar className="w-12 h-12">
                 <AvatarImage src={user.avatar} alt="Profile picture" />
                 <AvatarFallback>
                   {user.username.slice(0, 2).toUpperCase()}
@@ -244,13 +240,13 @@ const NavBarDesktop = ({ user, logout, className }: INavBarDesktopProps) => {
           !isTop && 'bg-background/40 backdrop-blur-md'
         )}
       >
-        <div className="space-x-4"></div>
-        <div>
+        <div className="space-x-4 w-1/3"></div>
+        <div className="w-full text-center">
           <Link to="/" className="text-2xl font-semibold">
             Hypertube
           </Link>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4 w-1/3">
           <div className="relative">
             <LuSearch
               className="w-5 h-5 cursor-pointer"
@@ -260,7 +256,7 @@ const NavBarDesktop = ({ user, logout, className }: INavBarDesktopProps) => {
           {user ? (
             <UserSection user={user} logout={logout} />
           ) : (
-            <Link to="/login" className="flex items-center gap-1">
+            <Link to="/auth/login" className="flex items-center gap-1">
               <Button variant={'default'}>Login</Button>
             </Link>
           )}

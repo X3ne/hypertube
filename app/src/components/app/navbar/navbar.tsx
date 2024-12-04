@@ -1,6 +1,5 @@
 import { useUser } from '@/hooks/useUser'
 import NavBarDesktop from './desktop'
-import NavBarMobile from './mobile'
 
 const NavBar = () => {
   const { user, logout } = useUser()
@@ -8,11 +7,11 @@ const NavBar = () => {
   return (
     <nav>
       <NavBarDesktop
-        user={null}
+        user={user}
         logout={logout}
         className="invisible md:visible"
       />
-      {/* <NavBarMobile user={null} className="visible md:invisible" /> */}
+      {/* <NavBarMobile users={null} className="visible md:invisible" /> */}
     </nav>
   )
 }

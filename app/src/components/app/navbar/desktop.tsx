@@ -55,7 +55,7 @@ const UserSection = ({ user, logout }: { user: User; logout: () => void }) => {
             />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="mr-8 mt-1">
+        <DropdownMenuContent className="mr-6 mt-4">
           <DropdownMenuLabel>
             <div className="flex gap-4">
               <Avatar className="w-12 h-12">

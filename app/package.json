@@ -22,7 +22,6 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
-    "@shineiichijo/marika": "^3.0.1",
     "@tanstack/react-query": "^5.52.2",
     "@tanstack/react-router": "^1.51.2",
     "@tauri-apps/api": "^2",

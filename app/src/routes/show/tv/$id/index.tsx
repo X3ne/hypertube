@@ -1,7 +1,6 @@
 import LazyImage from '@/components/lazy-image'
 import { useGradient } from '@/hooks/useGradient'
 import { useSong } from '@/hooks/useSong'
-import { Marika } from '@shineiichijo/marika'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect } from 'react'
@@ -12,13 +11,11 @@ import {
   LuClapperboard,
   LuHeart,
   LuPlay,
-  LuStar,
   LuTrendingUp
 } from 'react-icons/lu'
 import { Button } from '@/components/ui/button'
 import api from '@/api'
 import { getTmdbImageUrl, getTmdbPlaceholderImageUrl } from '@/utils/tmdb'
-import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import Separator from '../../../../components/ui/separator'
 import { SeasonCarousel } from '@/components/app/carousel'
@@ -49,7 +46,7 @@ function ShowView() {
   }, [show])
 
   return (
-    <div>
+    <div className="relative">
       {isShowLoading || !show ? (
         <p>Loading...</p>
       ) : (
@@ -64,8 +61,8 @@ function ShowView() {
           </div>
           <div
             className={cn(
-              'flex flex-col gap-6 w-full mt-28 px-4',
-              'md:mt-48 md:px-24'
+              'flex flex-col gap-6 w-full pt-28 px-4',
+              'md:pt-48 md:px-24'
             )}
           >
             <div className="flex flex-col gap-4 w-full md:flex-row md:gap-8">

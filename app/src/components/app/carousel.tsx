@@ -13,29 +13,43 @@ import {
 import { Link } from '@tanstack/react-router'
 import LazyImage from '@/components/lazy-image'
 import { getTmdbImageUrl, getTmdbPlaceholderImageUrl } from '@/utils/tmdb'
-import { Movie, TV } from '@/api'
-import { Popover, PopoverContent } from '@/components/ui/popover'
+import { Movie, Season, TV } from '@/api'
 
 export interface CarouselProps<S> extends React.HTMLAttributes<HTMLDivElement> {
   header?: string
   items: S[]
+  placeholderPoster?: string
 }
 
 export interface ShowCarouselProps<S>
   extends React.HTMLAttributes<HTMLDivElement> {
   header?: string
   items: S[]
-  linkPrefix: string
+  arrows?: boolean
   getTitle: (item: S) => string
+  getPoster: (item: S) => string
+  getLink: (item: S) => string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ShowCarousel = React.forwardRef<HTMLDivElement, ShowCarouselProps<any>>(
-  ({ className, items, header, linkPrefix, getTitle, ...props }, ref) => {
+  (
+    {
+      className,
+      items,
+      header,
+      arrows = true,
+      getTitle,
+      getPoster,
+      getLink,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <div className={cn('relative space-y-4', className)} ref={ref} {...props}>
         {header && (
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center px-6">
             <h2 className="text-foreground font-semibold text-xl">{header}</h2>
             <Button variant="outline" className="gap-1 px-8">
               See more
@@ -46,20 +60,20 @@ const ShowCarousel = React.forwardRef<HTMLDivElement, ShowCarouselProps<any>>(
         <Carousel className="relative">
           <CarouselPrevious className="absolute z-30 left-5" />
           <CarouselNext className="absolute z-30 right-5" />
-          <CarouselContent>
+          <CarouselContent className="px-6">
             {items.map((item) => (
               <CarouselItem
                 key={item.id}
                 title={getTitle(item)}
-                className="basis-2/6 md:basis-1/6 lg:basis-1/6 2xl:basis-64"
+                className="basis-52 md:basis-56 lg:basis-60 2xl:basis-64"
               >
-                <Link to={`${linkPrefix}/${item.id}`} className="w-32">
+                <Link to={getLink(item)} className="w-32">
                   <Card className="bg-transparent border-transparent text-foreground space-y-2 select-none">
                     <CardContent className="p-0">
                       <LazyImage
-                        src={getTmdbImageUrl(item.poster_path) || ''}
+                        src={getTmdbImageUrl(getPoster(item)) || ''}
                         placeholder={
-                          getTmdbPlaceholderImageUrl(item.poster_path) || ''
+                          getTmdbPlaceholderImageUrl(getPoster(item)) || ''
                         }
                         alt={getTitle(item)}
                         className=" rounded-md"
@@ -70,9 +84,11 @@ const ShowCarousel = React.forwardRef<HTMLDivElement, ShowCarouselProps<any>>(
                         <h1 className="font-medium line-clamp-1">
                           {getTitle(item)}
                         </h1>
-                        <div>
-                          <LuArrowRight />
-                        </div>
+                        {arrows && (
+                          <div>
+                            <LuArrowRight />
+                          </div>
+                        )}
                       </div>
                     </CardFooter>
                   </Card>
@@ -92,8 +108,9 @@ const TvCarousel = React.forwardRef<HTMLDivElement, CarouselProps<TV>>(
     <ShowCarousel
       ref={ref}
       {...props}
-      linkPrefix="/show/tv"
       getTitle={(show) => show.name}
+      getPoster={(show) => show.poster_path}
+      getLink={(show) => `/show/tv/${show.id}`}
     />
   )
 )
@@ -103,10 +120,26 @@ const MovieCarousel = React.forwardRef<HTMLDivElement, CarouselProps<Movie>>(
     <ShowCarousel
       ref={ref}
       {...props}
-      linkPrefix="/show/movie"
       getTitle={(show) => show.title}
+      getPoster={(show) => show.poster_path}
+      getLink={(show) => `/show/movie/${show.id}`}
     />
   )
 )
 
-export { TvCarousel, MovieCarousel }
+const SeasonCarousel = React.forwardRef<HTMLDivElement, CarouselProps<Season>>(
+  (props, ref) => (
+    <ShowCarousel
+      ref={ref}
+      {...props}
+      arrows={false}
+      getTitle={(season: Season) => season.name}
+      getPoster={(season: Season) =>
+        season.poster_path || props.placeholderPoster || ''
+      }
+      getLink={(season: Season) => `season/${season.season_number}`}
+    />
+  )
+)
+
+export { TvCarousel, MovieCarousel, SeasonCarousel }

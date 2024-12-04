@@ -21,6 +21,8 @@ import { getTmdbImageUrl, getTmdbPlaceholderImageUrl } from '@/utils/tmdb'
 import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import Separator from '../../../../components/ui/separator'
+import { SeasonCarousel } from '@/components/app/carousel'
+import CreditsCarousel from '@/components/app/credits-carousel'
 
 export const Route = createFileRoute('/show/tv/$id/')({
   component: ShowView
@@ -135,30 +137,19 @@ function ShowView() {
             </div>
           </div>
 
-          <div className="flex gap-4 px-12 py-6">
-            {show.seasons &&
-              show.seasons.map((season) => (
-                <Link
-                  key={season.id}
-                  to={`/show/tv/${id}/season/${season.season_number}`}
-                  className="flex flex-col gap-2"
-                >
-                  <div className="w-52 h-72 rounded-md overflow-hidden">
-                    <LazyImage
-                      src={
-                        season.poster_path
-                          ? getTmdbImageUrl(season.poster_path)
-                          : getTmdbImageUrl(show.poster_path) || ''
-                      }
-                      alt={season.name}
-                      className="hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="grow">
-                    <h1>{season.name}</h1>
-                  </div>
-                </Link>
-              ))}
+          <div className="py-4">
+            <h2 className="text-2xl font-semibold mb-2 px-6">Seasons</h2>
+            {show.seasons && (
+              <SeasonCarousel
+                items={show.seasons}
+                placeholderPoster={show.poster_path || ''}
+              />
+            )}
+          </div>
+
+          <div className="py-4">
+            <h2 className="text-2xl font-semibold mb-2 px-6">Cast & Crew</h2>
+            {show.credits && <CreditsCarousel credits={show.credits} />}
           </div>
         </div>
       )}

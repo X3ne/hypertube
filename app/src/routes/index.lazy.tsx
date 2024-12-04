@@ -4,7 +4,7 @@ import createDOMPurify from 'dompurify'
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { LuArrowRight, LuPause, LuPlay } from 'react-icons/lu'
-import { MovieCarousel, TvCarousel } from '@/components/app/showcarousel'
+import { MovieCarousel, TvCarousel } from '@/components/app/carousel'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useGradient } from '@/hooks/useGradient'
@@ -139,7 +139,7 @@ function Index() {
                 </div>
               ))}
             </Slideshow>
-            <div className="relative px-4 -top-16 z-20 space-y-8">
+            <div className="relative -top-16 z-20 space-y-8">
               {tvTrending && (
                 <TvCarousel items={tvTrending} header="Trending Tv shows" />
               )}

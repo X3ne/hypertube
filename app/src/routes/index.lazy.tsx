@@ -72,7 +72,7 @@ function Index() {
                 >
                   {videosIds && videosIds[i] && isVideoEnabled ? (
                     <div className="relative w-full h-full">
-                      <div className="relative pointer-events-none w-full aspect-video scale-[3] lg:scale-100 md:-translate-y-64 -z-10">
+                      <div className="relative pointer-events-none w-full aspect-video scale-[3] lg:scale-150 md:-translate-y-64 -z-10">
                         <ReactPlayer
                           url={`https://www.youtube.com/watch?v=${videosIds[i]}`}
                           width={'100%'}

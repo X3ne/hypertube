@@ -20,7 +20,7 @@ build:
 	cargo build $(release)
 
 dev:
-	RUST_LOG=$(rust_log) cargo watch --ignore 'downloads/*' --ignore 'frontend/*' --ignore 'cache/*' --ignore '*.m4s' -x "run -- $(prog) $(ARGS)"
+	RUST_LOG=$(rust_log) cargo watch --ignore 'downloads/*' --ignore 'app/*' --ignore 'cache/*' --ignore '*.m4s' -x "run -- $(prog) $(ARGS)"
 
 test:
 	cargo test

@@ -33,8 +33,8 @@ pub fn config_auth(cfg: &mut ServiceConfig) {
                 ),
             )
             .service(
-                scope(""), // .service(resource("/login").route(post().to(login)))
-                           // .service(resource("/logout").route(post().to(logout))),
+                scope("") // .service(resource("/login").route(post().to(login)))
+                    .service(resource("/logout").route(get().to(logout))),
             ),
     );
 }
@@ -125,6 +125,13 @@ pub async fn callback_42(
 
     security.session.insert("user_id", user.id)?;
     security.session.renew();
+
+    Ok(NoContent)
+}
+
+#[api_operation(tag = "auth", operation_id = "logout", summary = "Logout the current user")]
+pub async fn logout(security: Security) -> Result<NoContent, ApiError> {
+    security.session.clear();
 
     Ok(NoContent)
 }

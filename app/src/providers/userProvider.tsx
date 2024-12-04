@@ -5,13 +5,14 @@ import api, { User } from '@/api'
 
 export const UserContext = createContext({
   user: undefined as unknown as User | undefined,
+  isUserLoading: true,
   logout: () => {}
 })
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast()
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: isUserLoading } = useQuery({
     queryKey: ['user'],
     retry: false,
     queryFn: async () =>
@@ -48,7 +49,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   })
 
   return (
-    <UserContext.Provider value={{ user, logout }}>
+    <UserContext.Provider value={{ user, logout, isUserLoading }}>
       {children}
     </UserContext.Provider>
   )

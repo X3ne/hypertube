@@ -20,7 +20,7 @@ export const Route = createRootRoute({
 })
 
 function Root() {
-  const { user } = useUser()
+  const { user, isUserLoading } = useUser()
   const navigation = useNavigate()
   const location = useLocation()
 
@@ -51,10 +51,10 @@ function Root() {
         to: '/'
       })
     }
-  }, [location, isError])
+  }, [location, isError, navigation])
 
   useEffect(() => {
-    if (isError) return
+    if (isError || isUserLoading) return
     if (!user) {
       if (!AllowedRoutes.includes(location.pathname)) {
         navigation({
@@ -62,7 +62,7 @@ function Root() {
         })
       }
     }
-  }, [user, location])
+  }, [user, isUserLoading, location, isError, navigation])
 
   return (
     <>
